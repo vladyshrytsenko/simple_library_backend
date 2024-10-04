@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: library-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: passw0rd
+      POSTGRES_DB: simple-library-backend
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - library-network
+
+  app:
+    build: .
+    container_name: simple-library_backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/simple-library-backend
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: passw0rd
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    networks:
+      - library-network
+
+volumes:
+  postgres-data:
+
+networks:
+  library-network:
